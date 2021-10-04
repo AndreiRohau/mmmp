@@ -12,6 +12,9 @@ public interface UserDao {
      * @return List<UserDto>
      */
     List<UserDto> getUsers();
+    UserDto getUserById(Long id);
+    UserDto getUserByLoginAndPassword(User user);
+
 
     /**
      *
