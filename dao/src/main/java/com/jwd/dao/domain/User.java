@@ -6,6 +6,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String password; // hashed
+    private Address address;
 
     public User() {
     }

@@ -18,7 +18,7 @@ public class UserDaoImplTest {
         given - when - then
      */
 
-    private UserDaoImpl userDao = new UserDaoImpl();
+    private UserDaoImpl userDao = new UserDaoImpl(); // Mockito.mock(UserDaoImpl.class);
 
     @BeforeClass
     public static void setup() {
@@ -46,6 +46,9 @@ public class UserDaoImplTest {
         // given | arrange
         final List<UserDto> expectedUsers = getExpectedUsers();
         final int expectedLength = expectedUsers.size();
+
+        // mock set up
+        // Mockito.when(userDaoMock.getUsers()).thenReturn(getExpectedUsers());
 
         // when | act
         final List<UserDto> actualUsers = userDao.getUsers();

@@ -35,7 +35,6 @@
             <groupId>com.jwd</groupId>
             <artifactId>service</artifactId>
             <version>1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

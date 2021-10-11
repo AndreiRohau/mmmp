@@ -29,17 +29,22 @@ public class UserServiceImpl implements UserService {
     public UserDto registerUser(final User user) throws ServiceException {
         try {
             // validate parameters from higher layer
-            final com.jwd.dao.domain.User daoUser = new com.jwd.dao.domain.User();
-            daoUser.setId(user.getId());
-            daoUser.setLogin(user.getLogin());
-            daoUser.setFirstName(user.getFirstName());
-            daoUser.setLastName(user.getLastName());
-            daoUser.setPassword(user.getLastName());
+            final com.jwd.dao.domain.User daoUser = setUser(user);
             com.jwd.dao.domain.UserDto userDaoDto = userDao.saveUser(daoUser);
             final UserDto userDto = new UserDto(userDaoDto);
             return userDto;
         } catch (final DaoException e) {
             throw new ServiceException(e);
         }
+    }
+
+    private com.jwd.dao.domain.User setUser(User user) {
+        final com.jwd.dao.domain.User daoUser = new com.jwd.dao.domain.User();
+        daoUser.setId(user.getId());
+        daoUser.setLogin(user.getLogin());
+        daoUser.setFirstName(user.getFirstName());
+        daoUser.setLastName(user.getLastName());
+        daoUser.setPassword(user.getLastName());
+        return daoUser;
     }
 }

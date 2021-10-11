@@ -135,4 +135,5 @@ public class UserDaoPostgresqlImpl implements UserDao {
             preparedStatement.setString(queryParameterIndex, (String) parameter);
         }
     }
+
 }
