@@ -101,19 +101,31 @@ public class UserDaoPostgresqlImpl implements UserDao {
                 user.getPassword()
         );
         try (Connection connection = dataBaseConfig.getConnection();
+             //Connection connection = getConnection(false);
              PreparedStatement preparedStatement = getPreparedStatement(SAVE_USER_QUERY, connection, parameters);) {
 
             int affectedRows = preparedStatement.executeUpdate();
-            UserDto userDto = null;
-            if (affectedRows > 0) {
-                userDto = new UserDto(user);
-            }
-            return userDto;
+            connection.commit();
+
+//            UserDto userDto = null;
+//            if (affectedRows > 0) {
+//                userDto = new UserDto(user);
+//            }
+//            return userDto;
+
+            return (affectedRows > 0) ? new UserDto(user) : null;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
     }
+
+//    private Connection getConnection(final boolean hasAutocommit) throws SQLException {
+//        final Connection connection = dataBaseConfig.getConnection();
+//        connection.setAutoCommit(hasAutocommit);
+//        System.out.println(connection.getTransactionIsolation());
+//        return connection;
+//    }
 
     private PreparedStatement getPreparedStatement(String query, Connection connection, final List<Object> parameters) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
