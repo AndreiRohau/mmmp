@@ -1,8 +1,8 @@
 package com.jwd.dao.repository.impl;
 
 import com.jwd.dao.connection.impl.ConnectionPoolImpl;
-import com.jwd.dao.domain.User;
-import com.jwd.dao.domain.UserDto;
+import com.jwd.dao.domain.UserRow;
+import com.jwd.dao.domain.UserRowDto;
 import com.jwd.dao.exception.DaoException;
 import com.jwd.dao.repository.UserDao;
 
@@ -27,15 +27,15 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
     }
 
     @Override
-    public UserDto saveUser(User user) throws DaoException {
+    public UserRowDto saveUser(UserRow userRow) throws DaoException {
         List<Object> parameters1 = Collections.singletonList(
-                user.getLogin()
+                userRow.getLogin()
         );
         List<Object> parameters2 = Arrays.asList(
-                user.getLogin(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPassword()
+                userRow.getLogin(),
+                userRow.getFirstName(),
+                userRow.getLastName(),
+                userRow.getPassword()
         );
         Connection connection = null;
         PreparedStatement preparedStatement1 = null;
@@ -53,7 +53,7 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
             }
             connection.commit();
 
-            return (affectedRows > 0) ? new UserDto(user) : null;
+            return (affectedRows > 0) ? new UserRowDto(userRow) : null;
         } catch (SQLException | DaoException e) {
             e.printStackTrace();
             throw new DaoException(e);
@@ -65,10 +65,10 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
     }
 
     @Override
-    public UserDto findUserByLoginAndPassword(User user) throws DaoException {
+    public UserRowDto findUserByLoginAndPassword(UserRow userRow) throws DaoException {
         List<Object> parameters = Arrays.asList(
-                user.getLogin(),
-                user.getPassword()
+                userRow.getLogin(),
+                userRow.getPassword()
         );
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -78,16 +78,16 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
             preparedStatement = getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
             resultSet = preparedStatement.executeQuery();
 
-            UserDto userDto = null;
+            UserRowDto userRowDto = null;
             while (resultSet.next()) {
                 long id = resultSet.getLong(1);
                 String login = resultSet.getString(2);
                 String firstName = resultSet.getString(3);
                 String lastName = resultSet.getString(4);
-                userDto = new UserDto(id, login, firstName, lastName);
+                userRowDto = new UserRowDto(id, login, firstName, lastName);
             }
 
-            return userDto;
+            return userRowDto;
         } catch (SQLException | DaoException e) {
             e.printStackTrace();
             throw new DaoException(e);
@@ -99,17 +99,17 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
     }
 
     @Override
-    public List<UserDto> getUsers() {
+    public List<UserRowDto> getUsers() {
         try (Connection connection = getConnection(true);
              PreparedStatement preparedStatement = getPreparedStatement(FIND_ALL_USERS_QUERY, connection, Collections.emptyList());
              ResultSet resultSet = preparedStatement.executeQuery();) {
-            final List<UserDto> users = new ArrayList<>();
+            final List<UserRowDto> users = new ArrayList<>();
             while (resultSet.next()) {
                 long id = resultSet.getLong(1);
                 String login = resultSet.getString(2);
                 String fn = resultSet.getString(3);
                 String ln = resultSet.getString(4);
-                users.add(new UserDto(id, login, fn, ln));
+                users.add(new UserRowDto(id, login, fn, ln));
             }
             return users;
         } catch (SQLException | DaoException e) {
@@ -119,22 +119,22 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
     }
 
     @Override
-    public UserDto getUserById(Long id) throws DaoException {
+    public UserRowDto getUserById(Long id) throws DaoException {
         List<Object> parameters = Arrays.asList(
                 id
         );
         try (Connection connection = getConnection(true);
              PreparedStatement preparedStatement = getPreparedStatement(FIND_USER_BY_ID_QUERY, connection, parameters);
              ResultSet resultSet = preparedStatement.executeQuery();) {
-            UserDto userDto = null;
+            UserRowDto userRowDto = null;
             while (resultSet.next()) {
                 long foundId = resultSet.getLong(1);
                 String login = resultSet.getString(2);
                 String fn = resultSet.getString(3);
                 String ln = resultSet.getString(4);
-                userDto = new UserDto(foundId, login, fn, ln);
+                userRowDto = new UserRowDto(foundId, login, fn, ln);
             }
-            return userDto;
+            return userRowDto;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DaoException(e);

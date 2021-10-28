@@ -1,7 +1,7 @@
 package com.jwd.dao.repository.impl;
 
-import com.jwd.dao.domain.User;
-import com.jwd.dao.domain.UserDto;
+import com.jwd.dao.domain.UserRow;
+import com.jwd.dao.domain.UserRowDto;
 import com.jwd.dao.exception.DaoException;
 import org.junit.*;
 
@@ -44,14 +44,14 @@ public class UserDaoImplTest {
     @Test
     public void testGetUsers_simple() {
         // given | arrange
-        final List<UserDto> expectedUsers = getExpectedUsers();
+        final List<UserRowDto> expectedUsers = getExpectedUsers();
         final int expectedLength = expectedUsers.size();
 
         // mock set up
         // Mockito.when(userDaoMock.getUsers()).thenReturn(getExpectedUsers());
 
         // when | act
-        final List<UserDto> actualUsers = userDao.getUsers();
+        final List<UserRowDto> actualUsers = userDao.getUsers();
 
         // then | assert
         assertEquals(expectedLength, actualUsers.size());
@@ -62,25 +62,25 @@ public class UserDaoImplTest {
     @Test
     public void testGetUsers_comprehensive() throws DaoException {
         // given | arrange
-        final List<UserDto> expectedUsers = getExpectedUsers();
+        final List<UserRowDto> expectedUsers = getExpectedUsers();
         final int expectedLength = expectedUsers.size();
 
-        final User newUser = new User(4L, "dara", "Rex", "Lex", "444");
-        final UserDto changedUserDto = new UserDto(4L, "dara", "Rex", "Lex");
-        final List<UserDto> expectedChangedUsers = new ArrayList<>(getExpectedUsers());
-        expectedChangedUsers.add(changedUserDto);
+        final UserRow newUserRow = new UserRow(4L, "dara", "Rex", "Lex", "444");
+        final UserRowDto changedUserRowDto = new UserRowDto(4L, "dara", "Rex", "Lex");
+        final List<UserRowDto> expectedChangedUsers = new ArrayList<>(getExpectedUsers());
+        expectedChangedUsers.add(changedUserRowDto);
         final int expectedChangedLength = expectedLength + 1;
 
         // when | act
-        final List<UserDto> actualUsers = userDao.getUsers();
-        final UserDto actualUserDto = userDao.saveUser(newUser);
-        final List<UserDto> actualNewUsers = userDao.getUsers();
+        final List<UserRowDto> actualUsers = userDao.getUsers();
+        final UserRowDto actualUserRowDto = userDao.saveUser(newUserRow);
+        final List<UserRowDto> actualNewUsers = userDao.getUsers();
 
         // then | assert
         assertEquals(expectedLength, actualUsers.size());
         assertEquals(expectedUsers, actualUsers);
 
-        assertEquals(changedUserDto, actualUserDto);
+        assertEquals(changedUserRowDto, actualUserRowDto);
         assertEquals(expectedChangedLength, actualNewUsers.size());
         assertEquals(expectedChangedUsers, actualNewUsers);
     }
@@ -88,14 +88,14 @@ public class UserDaoImplTest {
     // positive
     @Test
     public void testSaveUser_success() throws DaoException {
-        final User newUser = new User(4L, "dara", "Rex", "Lex", "444");
-        final UserDto expectedUserDto = new UserDto(4L, "dara", "Rex", "Lex");
+        final UserRow newUserRow = new UserRow(4L, "dara", "Rex", "Lex", "444");
+        final UserRowDto expectedUserRowDto = new UserRowDto(4L, "dara", "Rex", "Lex");
 
-        final UserDto actualUserDto = userDao.saveUser(newUser);
-        final List<UserDto> actualUsers = userDao.getUsers();
+        final UserRowDto actualUserRowDto = userDao.saveUser(newUserRow);
+        final List<UserRowDto> actualUsers = userDao.getUsers();
 
-        assertEquals(expectedUserDto, actualUserDto);
-        assertTrue(actualUsers.contains(expectedUserDto));
+        assertEquals(expectedUserRowDto, actualUserRowDto);
+        assertTrue(actualUsers.contains(expectedUserRowDto));
     }
 
     // negative
@@ -104,11 +104,11 @@ public class UserDaoImplTest {
         userDao.saveUser(null);
     }
 
-    private List<UserDto> getExpectedUsers() {
+    private List<UserRowDto> getExpectedUsers() {
         return Arrays.asList(
-                new UserDto(1L, "abra", "Andrei", "Rohau"),
-                new UserDto(2L, "bara", "Valera", "Petrov"),
-                new UserDto(3L, "cobra", "Serhei", "Skaryna")
+                new UserRowDto(1L, "abra", "Andrei", "Rohau"),
+                new UserRowDto(2L, "bara", "Valera", "Petrov"),
+                new UserRowDto(3L, "cobra", "Serhei", "Skaryna")
         );
     }
 }

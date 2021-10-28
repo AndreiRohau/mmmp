@@ -1,7 +1,7 @@
 package com.jwd.dao.repository.impl;
 
-import com.jwd.dao.domain.User;
-import com.jwd.dao.domain.UserDto;
+import com.jwd.dao.domain.UserRow;
+import com.jwd.dao.domain.UserRowDto;
 import com.jwd.dao.exception.DaoException;
 import com.jwd.dao.repository.UserDao;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -13,47 +13,47 @@ import static java.util.Objects.isNull;
 
 public class UserDaoImpl implements UserDao {
     // stubbed database
-    private List<User> stubbedUsers = new ArrayList<>();
+    private List<UserRow> stubbedUserRows = new ArrayList<>();
 
     public UserDaoImpl() {
         initStubbedUsers();
     }
 
     private void initStubbedUsers() {
-        stubbedUsers.add(new User(1L, "abra", "Andrei", "Rohau", "111"));
-        stubbedUsers.add(new User(2L, "bara", "Valera", "Petrov", "222"));
-        stubbedUsers.add(new User(3L, "cobra", "Serhei", "Skaryna", "333"));
+        stubbedUserRows.add(new UserRow(1L, "abra", "Andrei", "Rohau", "111"));
+        stubbedUserRows.add(new UserRow(2L, "bara", "Valera", "Petrov", "222"));
+        stubbedUserRows.add(new UserRow(3L, "cobra", "Serhei", "Skaryna", "333"));
     }
 
     @Override
-    public List<UserDto> getUsers() {
+    public List<UserRowDto> getUsers() {
         // validate parameters from higher layer
-        final List<User> users = stubbedUsers; // execute query getting users from database
-        final List<UserDto> userDtos = new ArrayList<>();
-        for (final User daoUserDto : users) {
-            userDtos.add(new UserDto(daoUserDto));
+        final List<UserRow> userRows = stubbedUserRows; // execute query getting users from database
+        final List<UserRowDto> userRowDtos = new ArrayList<>();
+        for (final UserRow daoUserRowDto : userRows) {
+            userRowDtos.add(new UserRowDto(daoUserRowDto));
         }
-        return userDtos;
+        return userRowDtos;
     }
 
     @Override
-    public UserDto getUserById(Long id) {
+    public UserRowDto getUserById(Long id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public UserDto saveUser(User user) throws DaoException {
-        if (isNull(user)) {
+    public UserRowDto saveUser(UserRow userRow) throws DaoException {
+        if (isNull(userRow)) {
             throw new DaoException();
         }
         // validate parameters from higher layer
         // do not forget to generate user id if needed
-        stubbedUsers.add(user); // execute query saving user to database
-        return new UserDto(user);
+        stubbedUserRows.add(userRow); // execute query saving user to database
+        return new UserRowDto(userRow);
     }
 
     @Override
-    public UserDto findUserByLoginAndPassword(User user) throws DaoException {
+    public UserRowDto findUserByLoginAndPassword(UserRow userRow) throws DaoException {
         return null;
     }
 }

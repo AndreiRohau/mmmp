@@ -1,26 +1,22 @@
 package com.jwd.dao.domain;
 
-public class UserDto {
+public class UserRow {
     private Long id;
-    private String login;
-    private String firstName;
-    private String lastName;
+    private String login = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String password = ""; // hashed
+    private Address address;
 
-    public UserDto() {
+    public UserRow() {
     }
 
-    public UserDto(Long id, String login, String firstName, String lastName) {
+    public UserRow(Long id, String login, String firstName, String lastName, String password) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public UserDto(User user) {
-        id = user.getId();
-        login = user.getLogin();
-        firstName = user.getFirstName();
-        lastName = user.getLastName();
+        this.password = password;
     }
 
     public Long getId() {
@@ -55,17 +51,26 @@ public class UserDto {
         this.lastName = lastName;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserDto userDto = (UserDto) o;
+        UserRow userRow = (UserRow) o;
 
-        if (id != null ? !id.equals(userDto.id) : userDto.id != null) return false;
-        if (login != null ? !login.equals(userDto.login) : userDto.login != null) return false;
-        if (firstName != null ? !firstName.equals(userDto.firstName) : userDto.firstName != null) return false;
-        return lastName != null ? lastName.equals(userDto.lastName) : userDto.lastName == null;
+        if (id != null ? !id.equals(userRow.id) : userRow.id != null) return false;
+        if (login != null ? !login.equals(userRow.login) : userRow.login != null) return false;
+        if (firstName != null ? !firstName.equals(userRow.firstName) : userRow.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(userRow.lastName) : userRow.lastName != null) return false;
+        return password != null ? password.equals(userRow.password) : userRow.password == null;
     }
 
     @Override
@@ -74,16 +79,7 @@ public class UserDto {
         result = 31 * result + (login != null ? login.hashCode() : 0);
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
     }
 }

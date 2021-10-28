@@ -1,7 +1,7 @@
 package com.jwd.service.serviceLogic;
 
-import com.jwd.service.domain.Client;
-import com.jwd.service.domain.ClientDto;
+import com.jwd.service.domain.User;
+import com.jwd.service.domain.UserDto;
 import com.jwd.service.exception.ServiceException;
 
 import java.util.List;
@@ -9,16 +9,16 @@ import java.util.List;
 public interface UserService {
     /**
      *
-     * @param client - to be saved in app, received from UI
+     * @param user - to be saved in app, received from UI
      * @return ClientDto to display saved user
      */
-    ClientDto registerUser(final Client client) throws ServiceException;
+    UserDto registerUser(final User user) throws ServiceException;
 
-    ClientDto login(Client client) throws ServiceException;
+    UserDto login(User user) throws ServiceException;
 
     /**
      * returns all users in our app
      * @return List<ClientDto>
      */
-    List<ClientDto> getClients() throws ServiceException;
+    List<UserDto> getUsers() throws ServiceException;
 }

@@ -4,8 +4,8 @@ import com.jwd.controller.command.Command;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.security.Salt;
 import com.jwd.controller.validator.ControllerValidator;
-import com.jwd.service.domain.Client;
-import com.jwd.service.domain.ClientDto;
+import com.jwd.service.domain.User;
+import com.jwd.service.domain.UserDto;
 import com.jwd.service.serviceLogic.UserService;
 import com.jwd.service.serviceLogic.impl.UserServiceImpl;
 
@@ -36,13 +36,13 @@ public class RegistrationCommand implements Command {
             validate(login, password1, password2);
 
             // business logic
-            final Client client = new Client(login, passwordToHash(password1));
-            final ClientDto clientDto = userService.registerUser(client);
+            final User user = new User(login, passwordToHash(password1));
+            final UserDto userDto = userService.registerUser(user);
 
             // preparation to response
-            final String message = nonNull(clientDto) ? "Client registered successfully." : "Client HAS NOT BEEN registered.";
+            final String message = nonNull(userDto) ? "User registered successfully." : "User HAS NOT BEEN registered.";
             request.setAttribute(MESSAGE, message);
-            request.setAttribute(USER, clientDto);
+            request.setAttribute(USER, userDto);
 
             // send response
             request.getRequestDispatcher(prepareUri(request) + ".jsp").forward(request, response);

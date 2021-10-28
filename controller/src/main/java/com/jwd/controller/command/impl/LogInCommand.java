@@ -4,8 +4,8 @@ import com.jwd.controller.command.Command;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.security.Salt;
 import com.jwd.controller.validator.ControllerValidator;
-import com.jwd.service.domain.Client;
-import com.jwd.service.domain.ClientDto;
+import com.jwd.service.domain.User;
+import com.jwd.service.domain.UserDto;
 import com.jwd.service.serviceLogic.UserService;
 import com.jwd.service.serviceLogic.impl.UserServiceImpl;
 
@@ -36,13 +36,13 @@ public class LogInCommand implements Command {
             validate(login, password);
 
             // business logic
-            final Client client = new Client(login, passwordToHash(password));
-            final ClientDto clientDto = userService.login(client);
+            final User user = new User(login, passwordToHash(password));
+            final UserDto userDto = userService.login(user);
 
             // send response
-            if (nonNull(clientDto)) {
+            if (nonNull(userDto)) {
                 final HttpSession session = request.getSession(true);
-                session.setAttribute(ROLE, clientDto.getId()); // todo role
+                session.setAttribute(ROLE, userDto.getId()); // todo role
                 response.sendRedirect(prepareUri(request) + ".jsp");
             } else {
                 request.setAttribute(MESSAGE, "No such Client.");
