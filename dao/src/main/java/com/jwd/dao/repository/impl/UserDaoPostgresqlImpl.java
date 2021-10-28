@@ -10,10 +10,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
     private static final String FIND_USER_BY_LOGIN_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE u.login = ?;";
@@ -53,7 +54,8 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
             }
             connection.commit();
 
-            return (affectedRows > 0) ? new UserRowDto(userRow) : null;
+            processAbnormalCase(affectedRows < 1, "User HAS NOT BEEN registered. Such login exists.");
+            return new UserRowDto(userRow);
         } catch (SQLException | DaoException e) {
             e.printStackTrace();
             throw new DaoException(e);
@@ -86,7 +88,7 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
                 String lastName = resultSet.getString(4);
                 userRowDto = new UserRowDto(id, login, firstName, lastName);
             }
-
+            processAbnormalCase(isNull(userRowDto), "No such User.");
             return userRowDto;
         } catch (SQLException | DaoException e) {
             e.printStackTrace();
@@ -95,49 +97,6 @@ public class UserDaoPostgresqlImpl extends AbstractDao implements UserDao {
             close(resultSet);
             close(preparedStatement);
             retrieve(connection);
-        }
-    }
-
-    @Override
-    public List<UserRowDto> getUsers() {
-        try (Connection connection = getConnection(true);
-             PreparedStatement preparedStatement = getPreparedStatement(FIND_ALL_USERS_QUERY, connection, Collections.emptyList());
-             ResultSet resultSet = preparedStatement.executeQuery();) {
-            final List<UserRowDto> users = new ArrayList<>();
-            while (resultSet.next()) {
-                long id = resultSet.getLong(1);
-                String login = resultSet.getString(2);
-                String fn = resultSet.getString(3);
-                String ln = resultSet.getString(4);
-                users.add(new UserRowDto(id, login, fn, ln));
-            }
-            return users;
-        } catch (SQLException | DaoException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public UserRowDto getUserById(Long id) throws DaoException {
-        List<Object> parameters = Arrays.asList(
-                id
-        );
-        try (Connection connection = getConnection(true);
-             PreparedStatement preparedStatement = getPreparedStatement(FIND_USER_BY_ID_QUERY, connection, parameters);
-             ResultSet resultSet = preparedStatement.executeQuery();) {
-            UserRowDto userRowDto = null;
-            while (resultSet.next()) {
-                long foundId = resultSet.getLong(1);
-                String login = resultSet.getString(2);
-                String fn = resultSet.getString(3);
-                String ln = resultSet.getString(4);
-                userRowDto = new UserRowDto(foundId, login, fn, ln);
-            }
-            return userRowDto;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DaoException(e);
         }
     }
 }

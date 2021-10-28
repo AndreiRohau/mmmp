@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.jwd.controller.util.CommandEnum.LOGIN;
 import static com.jwd.controller.util.CommandEnum.*;
-import static com.jwd.controller.util.Constant.COMMAND;
+import static com.jwd.controller.util.Constant.*;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class FrontController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(FrontController.class.getName());
@@ -57,8 +59,19 @@ public class FrontController extends HttpServlet {
             final CommandEnum command = getCommand(req);
             commands.get(command).execute(req, resp);
         } catch (ControllerException e) {
+            // recursion
+            Throwable cause = getCause(e);
+            req.setAttribute(ERROR_MESSAGE, "Exception: " + cause.getMessage());
+            req.getRequestDispatcher(HOME + JSP).forward(req, resp);
             e.printStackTrace();
         }
+    }
+
+    private Throwable getCause(Throwable cause) {
+        if (nonNull(cause.getCause())) {
+            cause = getCause(cause.getCause()); // recursive call of same method inside of it
+        }
+        return cause;
     }
 
     private CommandEnum getCommand(final HttpServletRequest req) {

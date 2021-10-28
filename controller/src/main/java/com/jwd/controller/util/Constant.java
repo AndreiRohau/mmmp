@@ -2,8 +2,12 @@ package com.jwd.controller.util;
 
 public class Constant {
     public static final String
+            JSP = ".jsp",
+            HOME = "home",
+            MAIN = "main",
             COMMAND = "command",
             MESSAGE = "message",
+            ERROR_MESSAGE = "errorMessage",
             ROLE = "role",
             LOGIN = "login",
             PASSWORD = "password",

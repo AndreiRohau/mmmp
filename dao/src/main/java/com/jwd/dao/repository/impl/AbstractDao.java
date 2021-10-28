@@ -83,4 +83,10 @@ public class AbstractDao {
             e.printStackTrace();
         }
     }
+
+    protected void processAbnormalCase(boolean isTrue, String message) throws DaoException {
+        if (isTrue) {
+            throw new DaoException(message);
+        }
+    }
 }

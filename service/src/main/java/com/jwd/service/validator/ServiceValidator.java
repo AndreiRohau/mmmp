@@ -14,7 +14,7 @@ public class ServiceValidator {
 
     public void isValidString(final String string, final String subject) throws ServiceException {
         if (isNullOrEmpty(string)) {
-            throw new ServiceException("Exception: " + subject + " is null or empty.");
+            throw new ServiceException(subject + " is null or empty.");
         }
     }
 }

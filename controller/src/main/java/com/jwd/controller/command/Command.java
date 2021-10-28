@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface Command {
     void execute(final HttpServletRequest request, final HttpServletResponse response) throws ControllerException;
 
-    default String prepareUri(HttpServletRequest req) {
+    static String prepareUri(HttpServletRequest req) {
         String uri = req.getRequestURI().replace("/", "");
         if (uri.length() == 0) {
             uri = "home";

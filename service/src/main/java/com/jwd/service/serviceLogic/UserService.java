@@ -4,8 +4,6 @@ import com.jwd.service.domain.User;
 import com.jwd.service.domain.UserDto;
 import com.jwd.service.exception.ServiceException;
 
-import java.util.List;
-
 public interface UserService {
     /**
      *
@@ -15,10 +13,4 @@ public interface UserService {
     UserDto registerUser(final User user) throws ServiceException;
 
     UserDto login(User user) throws ServiceException;
-
-    /**
-     * returns all users in our app
-     * @return List<ClientDto>
-     */
-    List<UserDto> getUsers() throws ServiceException;
 }

@@ -45,7 +45,7 @@ public class ShowProductsCommand implements Command {
 
             // send response
             request.setAttribute(PAGEABLE, pageable);
-            request.getRequestDispatcher(prepareUri(request) + ".jsp").forward(request, response);
+            request.getRequestDispatcher(Command.prepareUri(request) + JSP).forward(request, response);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

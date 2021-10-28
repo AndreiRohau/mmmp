@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.logging.Logger;
 
 import static com.jwd.controller.util.Constant.*;
-import static java.util.Objects.nonNull;
 
 public class RegistrationCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(RegistrationCommand.class.getName());
@@ -40,12 +39,11 @@ public class RegistrationCommand implements Command {
             final UserDto userDto = userService.registerUser(user);
 
             // preparation to response
-            final String message = nonNull(userDto) ? "User registered successfully." : "User HAS NOT BEEN registered.";
-            request.setAttribute(MESSAGE, message);
+            request.setAttribute(MESSAGE, "User registered successfully.");
             request.setAttribute(USER, userDto);
 
             // send response
-            request.getRequestDispatcher(prepareUri(request) + ".jsp").forward(request, response);
+            request.getRequestDispatcher(Command.prepareUri(request) + JSP).forward(request, response);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

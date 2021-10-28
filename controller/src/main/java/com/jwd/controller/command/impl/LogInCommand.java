@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import java.util.logging.Logger;
 
 import static com.jwd.controller.util.Constant.*;
-import static java.util.Objects.nonNull;
 
 public class LogInCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(LogInCommand.class.getName());
@@ -40,14 +39,9 @@ public class LogInCommand implements Command {
             final UserDto userDto = userService.login(user);
 
             // send response
-            if (nonNull(userDto)) {
-                final HttpSession session = request.getSession(true);
-                session.setAttribute(ROLE, userDto.getId()); // todo role
-                response.sendRedirect(prepareUri(request) + ".jsp");
-            } else {
-                request.setAttribute(MESSAGE, "No such Client.");
-                request.getRequestDispatcher("home.jsp").forward(request, response);
-            }
+            final HttpSession session = request.getSession(true);
+            session.setAttribute(ROLE, userDto.getId()); // todo role
+            response.sendRedirect(Command.prepareUri(request) + JSP);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

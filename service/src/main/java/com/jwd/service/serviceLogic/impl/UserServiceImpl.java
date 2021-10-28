@@ -13,11 +13,6 @@ import com.jwd.service.exception.ServiceException;
 import com.jwd.service.serviceLogic.UserService;
 import com.jwd.service.validator.ServiceValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.isNull;
-
 public class UserServiceImpl implements UserService {
     private final UserDao userDao = new UserDaoPostgresqlImpl(new ConnectionPoolImpl(new DataBaseConfig()));
     private final ServiceValidator validator = new ServiceValidator();
@@ -34,7 +29,7 @@ public class UserServiceImpl implements UserService {
             UserRowDto userDaoDto = userDao.saveUser(daoUser);
 
             // return
-            return isNull(userDaoDto) ? null : new UserDto(userDaoDto);
+            return new UserDto(userDaoDto);
         } catch (final DaoException e) {
             throw new ServiceException(e);
         }
@@ -52,20 +47,10 @@ public class UserServiceImpl implements UserService {
             UserRowDto userDaoDto = userDao.findUserByLoginAndPassword(daoUser);
 
             // return
-            return isNull(userDaoDto) ? null : new UserDto(userDaoDto);
+            return new UserDto(userDaoDto);
         } catch (final DaoException e) {
             throw new ServiceException(e);
         }
-    }
-
-    @Override
-    public List<UserDto> getUsers() {
-        final List<UserRowDto> users = userDao.getUsers();
-        final List<UserDto> clients = new ArrayList<>();
-        for (final UserRowDto daoUserDto : users) {
-            clients.add(new UserDto(daoUserDto));
-        }
-        return clients;
     }
 
     private UserRow convertServiceUserToDaoUser(User user) {

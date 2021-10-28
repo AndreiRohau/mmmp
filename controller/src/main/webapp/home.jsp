@@ -7,6 +7,7 @@
     <body>
         <div>
             <h2>Home!</h2>
+            <c:out value="${errorMessage}" />
             <c:if test="${sessionScope.role != null}">
                 <p>Authorized=<c:out value="${sessionScope.role}" /></p>
                 <form method="get" action="/main" >

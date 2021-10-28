@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.logging.Logger;
 
+import static com.jwd.controller.util.Constant.HOME;
+import static com.jwd.controller.util.Constant.JSP;
+
 public class LogOutCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(LogOutCommand.class.getName());
 
@@ -15,7 +18,7 @@ public class LogOutCommand implements Command {
         LOGGER.info("LOG OUT STARTS.");
         try {
             request.getSession().invalidate();
-            response.sendRedirect("home.jsp");
+            response.sendRedirect(HOME + JSP);
         } catch (Exception e) {
             throw new ControllerException(e);
         }
