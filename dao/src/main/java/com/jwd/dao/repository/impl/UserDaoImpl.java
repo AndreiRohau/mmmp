@@ -42,11 +42,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserDto getUserByLoginAndPassword(User user) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public UserDto saveUser(User user) throws DaoException {
         if (isNull(user)) {
             throw new DaoException();
@@ -55,5 +50,10 @@ public class UserDaoImpl implements UserDao {
         // do not forget to generate user id if needed
         stubbedUsers.add(user); // execute query saving user to database
         return new UserDto(user);
+    }
+
+    @Override
+    public UserDto findUserByLoginAndPassword(User user) throws DaoException {
+        return null;
     }
 }

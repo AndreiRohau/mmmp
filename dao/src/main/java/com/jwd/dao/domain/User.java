@@ -2,10 +2,10 @@ package com.jwd.dao.domain;
 
 public class User {
     private Long id;
-    private String login;
-    private String firstName;
-    private String lastName;
-    private String password; // hashed
+    private String login = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String password = ""; // hashed
     private Address address;
 
     public User() {
