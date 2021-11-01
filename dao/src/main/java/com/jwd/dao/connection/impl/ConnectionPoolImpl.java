@@ -40,7 +40,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
     @Override
     public Connection take() throws DaoException {
         Connection newConnection;
-        try{
+        try {
             LOGGER.info("#take()");
             newConnection = pool.take();
             taken.add(newConnection);
