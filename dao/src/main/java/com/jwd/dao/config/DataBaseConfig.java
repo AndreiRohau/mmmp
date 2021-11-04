@@ -62,29 +62,4 @@ public class DataBaseConfig {
         }
     }
 
-    //region Not required any more
-//    public void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
-//        try {
-//            if (nonNull(resultSet)) {
-//                resultSet.close();
-//            }
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//        try {
-//            if (nonNull(preparedStatement)) {
-//                preparedStatement.close();
-//            }
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//        try {
-//            if (nonNull(connection)) {
-//                connection.close();
-//            }
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//    }
-    //endregion
 }
