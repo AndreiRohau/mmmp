@@ -9,7 +9,7 @@
         <a href="/">[GET] Go to Home.jsp</a>
         <p>Message from server (requestScope.serverMessage): ${requestScope.serverMessage}</p>
         <p>Message from server (requestScope.users): ${requestScope.users}</p>
-        <p>Message from server (requestScope.users): ${requestScope.user[0]}</p>
+        <p>Message from server (requestScope.users): ${requestScope.userRaw[0]}</p>
         <p></p>
     </body>
 </html>

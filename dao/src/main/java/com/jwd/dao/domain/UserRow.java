@@ -1,17 +1,16 @@
 package com.jwd.dao.domain;
 
-public class User {
+public class UserRow {
     private Long id;
     private String login;
     private String firstName;
     private String lastName;
     private String password; // hashed
-    private Address address;
 
-    public User() {
+    public UserRow() {
     }
 
-    public User(Long id, String login, String firstName, String lastName, String password) {
+    public UserRow(Long id, String login, String firstName, String lastName, String password) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
@@ -64,13 +63,13 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
+        UserRow userRow = (UserRow) o;
 
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
-        if (login != null ? !login.equals(user.login) : user.login != null) return false;
-        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
-        return password != null ? password.equals(user.password) : user.password == null;
+        if (id != null ? !id.equals(userRow.id) : userRow.id != null) return false;
+        if (login != null ? !login.equals(userRow.login) : userRow.login != null) return false;
+        if (firstName != null ? !firstName.equals(userRow.firstName) : userRow.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(userRow.lastName) : userRow.lastName != null) return false;
+        return password != null ? password.equals(userRow.password) : userRow.password == null;
     }
 
     @Override

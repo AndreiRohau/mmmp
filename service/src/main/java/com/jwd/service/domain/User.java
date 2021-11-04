@@ -6,8 +6,6 @@ public class User {
     private String firstName;
     private String lastName;
     private String password; // hashed
-    private String password1;
-    private String password2;
 
     public User() {
     }
@@ -20,10 +18,8 @@ public class User {
         this.password = password;
     }
 
-    public User(String login, String password1, String password2) {
+    public User(String login) {
         this.login = login;
-        this.password1 = password1;
-        this.password2 = password2;
     }
 
     public Long getId() {

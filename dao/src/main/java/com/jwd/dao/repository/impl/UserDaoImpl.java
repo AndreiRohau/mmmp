@@ -1,59 +1,151 @@
 package com.jwd.dao.repository.impl;
 
-import com.jwd.dao.domain.User;
-import com.jwd.dao.domain.UserDto;
-import com.jwd.dao.exception.DaoException;
+import com.jwd.dao.config.DataBaseConfig;
+import com.jwd.dao.domain.UserRow;
+import com.jwd.dao.domain.UserRowDto;
 import com.jwd.dao.repository.UserDao;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 public class UserDaoImpl implements UserDao {
-    // stubbed database
-    private List<User> stubbedUsers = new ArrayList<>();
+    private static final String FIND_ALL_USERS_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u;";
+    private static final String FIND_USER_BY_ID_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE id = ?;";
+    private static final String FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE login = ? AND password = ?;";
+    private static final String SAVE_USER_QUERY = "INSERT INTO users (login, firstname, lastname, password) VALUES (?, ?, ?, ?)";
+    private final DataBaseConfig dataBaseConfig;
 
     public UserDaoImpl() {
-        initStubbedUsers();
-    }
-
-    private void initStubbedUsers() {
-        stubbedUsers.add(new User(1L, "abra", "Andrei", "Rohau", "111"));
-        stubbedUsers.add(new User(2L, "bara", "Valera", "Petrov", "222"));
-        stubbedUsers.add(new User(3L, "cobra", "Serhei", "Skaryna", "333"));
+        dataBaseConfig = new DataBaseConfig();
     }
 
     @Override
-    public List<UserDto> getUsers() {
-        // validate parameters from higher layer
-        final List<User> users = stubbedUsers; // execute query getting users from database
-        final List<UserDto> userDtos = new ArrayList<>();
-        for (final User daoUserDto : users) {
-            userDtos.add(new UserDto(daoUserDto));
+    public List<UserRowDto> getUsers() {
+        try (Connection connection = dataBaseConfig.getConnection();
+             PreparedStatement preparedStatement = getPreparedStatement(FIND_ALL_USERS_QUERY, connection, Collections.emptyList());
+             ResultSet resultSet = preparedStatement.executeQuery();) {
+            final List<UserRowDto> users = new ArrayList<>();
+            while (resultSet.next()) {
+                long id = resultSet.getLong(1);
+                String login = resultSet.getString(2);
+                String fn = resultSet.getString(3);
+                String ln = resultSet.getString(4);
+                users.add(new UserRowDto(id, login, fn, ln));
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
         }
-        return userDtos;
     }
 
     @Override
-    public UserDto getUserById(Long id) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public UserDto getUserByLoginAndPassword(User user) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public UserDto saveUser(User user) throws DaoException {
-        if (isNull(user)) {
-            throw new DaoException();
+    public UserRowDto getUserById(Long id) {
+        List<Object> parameters = Arrays.asList(
+                id
+        );
+        try (Connection connection = dataBaseConfig.getConnection();
+             PreparedStatement preparedStatement = getPreparedStatement(FIND_USER_BY_ID_QUERY, connection, parameters);
+             ResultSet resultSet = preparedStatement.executeQuery();) {
+            UserRowDto userRowDto = null;
+            while (resultSet.next()) {
+                long foundId = resultSet.getLong(1);
+                String login = resultSet.getString(2);
+                String fn = resultSet.getString(3);
+                String ln = resultSet.getString(4);
+                userRowDto = new UserRowDto(foundId, login, fn, ln);
+            }
+            return userRowDto;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
         }
-        // validate parameters from higher layer
-        // do not forget to generate user id if needed
-        stubbedUsers.add(user); // execute query saving user to database
-        return new UserDto(user);
     }
+
+    @Override
+    public UserRowDto getUserByLoginAndPassword(UserRow userRow) {
+        List<Object> parameters = Arrays.asList(
+                userRow.getLogin(),
+                userRow.getPassword()
+        );
+        try (Connection connection = dataBaseConfig.getConnection();
+             PreparedStatement preparedStatement = getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
+             ResultSet resultSet = preparedStatement.executeQuery();) {
+            UserRowDto userRowDto = null;
+            while (resultSet.next()) {
+                long foundId = resultSet.getLong(1);
+                String login = resultSet.getString(2);
+                String fn = resultSet.getString(3);
+                String ln = resultSet.getString(4);
+                userRowDto = new UserRowDto(foundId, login, fn, ln);
+            }
+            return userRowDto;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public UserRowDto saveUser(UserRow userRow) {
+        List<Object> parameters = Arrays.asList(
+                userRow.getLogin(),
+                userRow.getFirstName(),
+                userRow.getLastName(),
+                userRow.getPassword()
+        );
+        try (Connection connection = dataBaseConfig.getConnection();
+             //Connection connection = getConnection(false);
+             PreparedStatement preparedStatement = getPreparedStatement(SAVE_USER_QUERY, connection, parameters);) {
+
+            int affectedRows = preparedStatement.executeUpdate();
+            connection.commit();
+
+//            UserDto userDto = null;
+//            if (affectedRows > 0) {
+//                userDto = new UserDto(user);
+//            }
+//            return userDto;
+
+            return (affectedRows > 0) ? new UserRowDto(userRow) : null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+//    private Connection getConnection(final boolean hasAutocommit) throws SQLException {
+//        final Connection connection = dataBaseConfig.getConnection();
+//        connection.setAutoCommit(hasAutocommit);
+//        System.out.println(connection.getTransactionIsolation());
+//        return connection;
+//    }
+
+    private PreparedStatement getPreparedStatement(String query, Connection connection, final List<Object> parameters) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        setPreparedStatementParameters(preparedStatement, parameters);
+        return preparedStatement;
+    }
+
+    private void setPreparedStatementParameters(PreparedStatement preparedStatement, List<Object> parameters) throws SQLException {
+        for (int i = 0, queryParameterIndex = 1; i < parameters.size(); i++, queryParameterIndex++) {
+            Object parameter = parameters.get(i);
+            setPreparedStatementParameter(preparedStatement, queryParameterIndex, parameter);
+        }
+    }
+
+    private void setPreparedStatementParameter(PreparedStatement preparedStatement, int queryParameterIndex, Object parameter) throws SQLException {
+        if (Long.class == parameter.getClass()) {
+            preparedStatement.setLong(queryParameterIndex, (Long) parameter);
+        } else if (String.class == parameter.getClass()){
+            preparedStatement.setString(queryParameterIndex, (String) parameter);
+        }
+    }
+
 }

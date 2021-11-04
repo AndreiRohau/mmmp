@@ -1,26 +1,26 @@
 package com.jwd.dao.domain;
 
-public class UserDto {
+public class UserRowDto {
     private Long id;
     private String login;
     private String firstName;
     private String lastName;
 
-    public UserDto() {
+    public UserRowDto() {
     }
 
-    public UserDto(Long id, String login, String firstName, String lastName) {
+    public UserRowDto(Long id, String login, String firstName, String lastName) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public UserDto(User user) {
-        id = user.getId();
-        login = user.getLogin();
-        firstName = user.getFirstName();
-        lastName = user.getLastName();
+    public UserRowDto(UserRow userRow) {
+        id = userRow.getId();
+        login = userRow.getLogin();
+        firstName = userRow.getFirstName();
+        lastName = userRow.getLastName();
     }
 
     public Long getId() {
@@ -60,12 +60,12 @@ public class UserDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserDto userDto = (UserDto) o;
+        UserRowDto userRowDto = (UserRowDto) o;
 
-        if (id != null ? !id.equals(userDto.id) : userDto.id != null) return false;
-        if (login != null ? !login.equals(userDto.login) : userDto.login != null) return false;
-        if (firstName != null ? !firstName.equals(userDto.firstName) : userDto.firstName != null) return false;
-        return lastName != null ? lastName.equals(userDto.lastName) : userDto.lastName == null;
+        if (id != null ? !id.equals(userRowDto.id) : userRowDto.id != null) return false;
+        if (login != null ? !login.equals(userRowDto.login) : userRowDto.login != null) return false;
+        if (firstName != null ? !firstName.equals(userRowDto.firstName) : userRowDto.firstName != null) return false;
+        return lastName != null ? lastName.equals(userRowDto.lastName) : userRowDto.lastName == null;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class UserDto {
 
     @Override
     public String toString() {
-        return "UserDto{" +
+        return "UserRowDto{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", firstName='" + firstName + '\'' +
