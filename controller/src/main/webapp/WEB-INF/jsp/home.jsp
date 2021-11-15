@@ -9,7 +9,7 @@
     </head>
     <body>
     <div class="header">
-        <h2>Home!</h2>
+        <h2>Secure Home!</h2>
         <p><c:out value="${message}" /></p>
         <p><c:out value="${error_message}" /></p>
         <c:if test="${sessionScope.role != null}">

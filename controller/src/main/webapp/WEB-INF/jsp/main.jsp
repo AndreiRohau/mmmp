@@ -3,7 +3,7 @@
 <!--    <script src="static//index.js"></script>-->
 </head>
     <body>
-        <h2>Main!</h2>
+        <h2>Secure Main!</h2>
         <hr/>
         <!-- NAGATION -->
         <a href="/">[GET] Go to Home.jsp</a>
