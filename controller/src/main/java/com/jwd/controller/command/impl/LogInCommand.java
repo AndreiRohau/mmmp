@@ -4,10 +4,10 @@ import com.jwd.controller.command.Command;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.security.Salt;
 import com.jwd.controller.validator.ControllerValidator;
+import com.jwd.service.ServiceFactory;
 import com.jwd.service.domain.User;
 import com.jwd.service.domain.UserDto;
 import com.jwd.service.serviceLogic.UserService;
-import com.jwd.service.serviceLogic.impl.UserServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ public class LogInCommand implements Command {
 
     private static final Logger LOGGER = Logger.getLogger(LogInCommand.class.getName());
 
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService = ServiceFactory.getInstance().getUserService();
     private final ControllerValidator validator = new ControllerValidator();
     private final Salt salt = new Salt();
 

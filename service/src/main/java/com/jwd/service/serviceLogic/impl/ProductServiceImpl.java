@@ -1,12 +1,10 @@
 package com.jwd.service.serviceLogic.impl;
 
-import com.jwd.dao.config.DataBaseConfig;
-import com.jwd.dao.connection.impl.ConnectionPoolImpl;
+import com.jwd.dao.DaoFactory;
 import com.jwd.dao.domain.Pageable;
 import com.jwd.dao.domain.ProductRow;
 import com.jwd.dao.exception.DaoException;
 import com.jwd.dao.repository.ProductDao;
-import com.jwd.dao.repository.impl.ProductDaoImpl;
 import com.jwd.service.domain.Page;
 import com.jwd.service.domain.Product;
 import com.jwd.service.exception.ServiceException;
@@ -18,7 +16,7 @@ import java.util.List;
 import static java.util.Objects.nonNull;
 
 public class ProductServiceImpl implements ProductService {
-    private final ProductDao productDao = new ProductDaoImpl(new ConnectionPoolImpl(new DataBaseConfig()));
+    private final ProductDao productDao = DaoFactory.getInstance().getProductDao();
 
     @Override
     public Page<Product> showProducts(Page<Product> productPageRequest) throws ServiceException {

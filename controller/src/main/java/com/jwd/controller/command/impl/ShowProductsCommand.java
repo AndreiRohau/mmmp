@@ -2,6 +2,7 @@ package com.jwd.controller.command.impl;
 
 import com.jwd.controller.command.Command;
 import com.jwd.controller.exception.ControllerException;
+import com.jwd.service.ServiceFactory;
 import com.jwd.service.domain.Page;
 import com.jwd.service.domain.Product;
 import com.jwd.service.serviceLogic.ProductService;
@@ -18,7 +19,7 @@ import static com.jwd.controller.util.Util.pathToJsp;
 public class ShowProductsCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(ShowProductsCommand.class.getName());
 
-    private final ProductService productService = new ProductServiceImpl();
+    private final ProductService productService = ServiceFactory.getInstance().getProductService();
 
     @Override
     public void process(HttpServletRequest request, HttpServletResponse response) throws ControllerException {

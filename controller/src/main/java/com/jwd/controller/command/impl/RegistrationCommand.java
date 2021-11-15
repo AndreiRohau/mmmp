@@ -4,11 +4,11 @@ import com.jwd.controller.command.Command;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.security.Salt;
 import com.jwd.controller.validator.ControllerValidator;
+import com.jwd.service.ServiceFactory;
 import com.jwd.service.domain.User;
 import com.jwd.service.domain.UserDto;
 import com.jwd.service.exception.ServiceException;
 import com.jwd.service.serviceLogic.UserService;
-import com.jwd.service.serviceLogic.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,9 +21,10 @@ import static com.jwd.controller.util.Util.pathToJsp;
 
 public class RegistrationCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(RegistrationCommand.class.getName());
-    private UserService userService = new UserServiceImpl(); // todo refactor to singleton
-    private ControllerValidator  validator = new ControllerValidator(); // todo refactor to singleton
-    private Salt salt = new Salt(); // todo refactor to singleton
+
+    private final UserService userService = ServiceFactory.getInstance().getUserService();
+    private final ControllerValidator validator = new ControllerValidator(); // todo refactor to singleton
+    private final Salt salt = new Salt(); // todo refactor to singleton
 
     @Override
     public void process(HttpServletRequest request, HttpServletResponse response) throws ControllerException {

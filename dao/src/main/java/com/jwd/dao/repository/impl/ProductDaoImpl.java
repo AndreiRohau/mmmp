@@ -1,7 +1,6 @@
 package com.jwd.dao.repository.impl;
 
 import com.jwd.dao.connection.ConnectionPool;
-import com.jwd.dao.connection.impl.ConnectionPoolImpl;
 import com.jwd.dao.domain.Pageable;
 import com.jwd.dao.domain.ProductRow;
 import com.jwd.dao.exception.DaoException;
@@ -20,7 +19,7 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
     private static final String COUNT_ALL_FILTERED_SORTED = "SELECT count(p.id) FROM products p;";
     // SELECT * FROM products p ORDER BY p.name ASC LIMIT 5 OFFSET 0;
     private static final String FIND_PAGE_FILTERED_SORTED = "SELECT * FROM products p ORDER BY p.%s %s LIMIT ? OFFSET ?;";
-    public ProductDaoImpl(final ConnectionPoolImpl connectionPool) {
+    public ProductDaoImpl(final ConnectionPool connectionPool) {
         super(connectionPool);
     }
 
