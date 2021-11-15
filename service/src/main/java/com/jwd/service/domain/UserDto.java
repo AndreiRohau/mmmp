@@ -16,7 +16,7 @@ public class UserDto {
         this.lastName = lastName;
     }
 
-    public UserDto(com.jwd.dao.domain.UserDto user) {
+    public UserDto(com.jwd.dao.domain.UserRowDto user) {
         id = user.getId();
         login = user.getLogin();
         firstName = user.getFirstName();

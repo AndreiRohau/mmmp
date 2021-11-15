@@ -2,10 +2,10 @@ package com.jwd.service.domain;
 
 public class User {
     private Long id;
-    private String login;
-    private String firstName;
-    private String lastName;
-    private String password; // hashed
+    private String login = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String password = ""; // hashed
 
     public User() {
     }
@@ -15,6 +15,11 @@ public class User {
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.password = password;
+    }
+
+    public User(String login, String password) {
+        this.login = login;
         this.password = password;
     }
 
