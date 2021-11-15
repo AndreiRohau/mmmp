@@ -25,18 +25,36 @@ public class UserServiceImpl implements UserService {
             validator.validate(user);
 
             // prepare data
-            final UserRow userRow = convertServiceUserToDaoUser(user);
+            final UserRow userRow = convertServiceUserToUserRow(user);
             // process data
-            UserRowDto userDaoDto = userDao.saveUser(userRow);
+            UserRowDto userRowDto = userDao.saveUser(userRow);
 
             // return
-            return new UserDto(userDaoDto);
+            return new UserDto(userRowDto);
         } catch (final DaoException e) {
             throw new ServiceException(e);
         }
     }
 
-    private UserRow convertServiceUserToDaoUser(User user) {
+    @Override
+    public UserDto login(User user) throws ServiceException {
+        try {
+            // validation
+            validator.validate(user);
+
+            // prepare data
+            final UserRow userRow = convertServiceUserToUserRow(user);
+            // process data
+            UserRowDto userRowDto = userDao.findUserByLoginAndPassword(userRow);
+
+            // return
+            return new UserDto(userRowDto);
+        } catch (final DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private UserRow convertServiceUserToUserRow(User user) {
         final UserRow userRow = new UserRow();
         userRow.setId(user.getId());
         userRow.setLogin(user.getLogin());

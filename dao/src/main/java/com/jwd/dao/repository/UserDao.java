@@ -11,4 +11,6 @@ public interface UserDao {
      * @return UserRowDto to displayed
      */
     UserRowDto saveUser(UserRow userRow) throws DaoException;
+
+    UserRowDto findUserByLoginAndPassword(UserRow userRow) throws DaoException;
 }

@@ -1,8 +1,7 @@
 package com.jwd.controller;
 
 import com.jwd.controller.command.Command;
-import com.jwd.controller.command.impl.DefaultCommand;
-import com.jwd.controller.command.impl.RegistrationCommand;
+import com.jwd.controller.command.impl.*;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.util.CommandEnum;
 
@@ -16,8 +15,10 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.jwd.controller.util.CommandEnum.LOGIN;
 import static com.jwd.controller.util.CommandEnum.*;
 import static com.jwd.controller.util.Constant.*;
+import static com.jwd.controller.util.Util.pathToJsp;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -36,6 +37,9 @@ public class FrontController extends HttpServlet {
         }
         commandMap.put(DEFAULT, new DefaultCommand());
         commandMap.put(REGISTRATION, new RegistrationCommand());
+        commandMap.put(LOGIN, new LogInCommand());
+        commandMap.put(LOGOUT, new LogOutCommand());
+        commandMap.put(SHOW_PRODUCTS, new ShowProductsCommand());
     }
 
     @Override
@@ -57,7 +61,7 @@ public class FrontController extends HttpServlet {
             // recursion
             Throwable cause = getCause(e);
             req.setAttribute(ERROR_MESSAGE, "Exception: " + cause.getMessage());
-            req.getRequestDispatcher(HOME + JSP).forward(req, resp);
+            req.getRequestDispatcher(pathToJsp(HOME)).forward(req, resp);
             LOGGER.warning(cause.getMessage());
         }
     }

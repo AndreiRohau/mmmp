@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.jwd.dao.util.Util.convertNullToEmpty;
+import static java.util.Objects.isNull;
 
 public class UserDaoImpl extends AbstractDao implements UserDao {
 
@@ -63,6 +64,40 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
         } finally {
             close(resultSet);
             close(preparedStatement1, preparedStatement2);
+            retrieve(connection);
+        }
+    }
+
+    @Override
+    public UserRowDto findUserByLoginAndPassword(UserRow userRow) throws DaoException {
+        List<Object> parameters = Arrays.asList(
+                userRow.getLogin(),
+                userRow.getPassword()
+        );
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection(true);
+            preparedStatement = getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
+            resultSet = preparedStatement.executeQuery();
+
+            UserRowDto userRowDto = null;
+            while (resultSet.next()) {
+                long id = resultSet.getLong(1);
+                String login = resultSet.getString(2);
+                String firstName = resultSet.getString(3);
+                String lastName = resultSet.getString(4);
+                userRowDto = new UserRowDto(id, login, firstName, lastName);
+            }
+            processAbnormalCase(isNull(userRowDto), "No such User.");
+            return userRowDto;
+        } catch (SQLException | DaoException e) {
+            e.printStackTrace();
+            throw new DaoException(e);
+        } finally {
+            close(resultSet);
+            close(preparedStatement);
             retrieve(connection);
         }
     }
