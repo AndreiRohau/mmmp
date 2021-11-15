@@ -2,7 +2,7 @@ package com.jwd.controller.util;
 
 public class Constant {
     public static final String
-//            JSP_FOLDER = "WEB-INF/jsp/",
+            JSP_FOLDER = "WEB-INF/jsp/",
             HOME = "home",
             MAIN = "main",
             JSP = ".jsp",

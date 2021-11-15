@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import static com.jwd.controller.util.Constant.*;
+import static com.jwd.controller.util.Util.pathToJsp;
 
 public class RegistrationCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(RegistrationCommand.class.getName());
@@ -45,7 +46,7 @@ public class RegistrationCommand implements Command {
             request.setAttribute(USER, userDto);
 
             //send response
-            request.getRequestDispatcher(Command.prepareUri(request) + JSP).forward(request, response);
+            request.getRequestDispatcher(pathToJsp(Command.prepareUri(request))).forward(request, response);
         } catch (ServiceException | ServletException | IOException e) {
             throw new ControllerException(e);
         }
