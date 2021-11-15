@@ -64,14 +64,14 @@
         <div style="margin-left: center">
             <c:forEach begin="1" end="${Math.ceil(pageable.totalElements / pageable.limit)}" var="i">
                 <c:if test="${i == pageable.pageNumber}">
-                            <span>
-                                <button style="color:red" form="show_products" type="submit" name="currentPage" value="${i}">${i}</button>
-                            </span>
+                    <span>
+                        <button style="color:red" form="show_products" type="submit" name="currentPage" value="${i}">${i}</button>
+                    </span>
                 </c:if>
                 <c:if test="${i != pageable.pageNumber}">
-                            <span>
-                                <button form="show_products" type="submit" name="currentPage" value="${i}">${i}</button>
-                            </span>
+                    <span>
+                        <button form="show_products" type="submit" name="currentPage" value="${i}">${i}</button>
+                    </span>
                 </c:if>
             </c:forEach>
         </div>
