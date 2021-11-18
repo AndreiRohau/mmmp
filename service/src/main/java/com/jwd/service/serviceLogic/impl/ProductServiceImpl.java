@@ -1,6 +1,5 @@
 package com.jwd.service.serviceLogic.impl;
 
-import com.jwd.dao.DaoFactory;
 import com.jwd.dao.domain.Pageable;
 import com.jwd.dao.domain.ProductRow;
 import com.jwd.dao.exception.DaoException;
@@ -9,6 +8,7 @@ import com.jwd.service.domain.Page;
 import com.jwd.service.domain.Product;
 import com.jwd.service.exception.ServiceException;
 import com.jwd.service.serviceLogic.ProductService;
+import com.jwd.service.validator.ServiceValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,18 @@ import java.util.List;
 import static java.util.Objects.nonNull;
 
 public class ProductServiceImpl implements ProductService {
-    private final ProductDao productDao = DaoFactory.getInstance().getProductDao();
+    private final ProductDao productDao;
+    private final ServiceValidator validator = new ServiceValidator();
+
+    public ProductServiceImpl(final ProductDao productDao) {
+        this.productDao = productDao;
+    }
 
     @Override
     public Page<Product> showProducts(Page<Product> productPageRequest) throws ServiceException {
         try {
             // validation
-            // ... productPageRequest
+            validator.validate(productPageRequest);
 
             // prepare data
             final Pageable<ProductRow> daoProductPageable = convertToPageableProduct(productPageRequest);
@@ -73,19 +78,10 @@ public class ProductServiceImpl implements ProductService {
         pageable.setPageNumber(pageableRequest.getPageNumber());
         pageable.setLimit(pageableRequest.getLimit());
         pageable.setTotalElements(pageableRequest.getTotalElements());
-        pageable.setElements(convertToProductRows(pageableRequest.getElements()));
         pageable.setFilter(convertToProductRow(pageableRequest.getFilter()));
         pageable.setSortBy(pageableRequest.getSortBy());
         pageable.setDirection(pageableRequest.getDirection());
         return pageable;
-    }
-
-    private List<ProductRow> convertToProductRows(final List<Product> elements) {
-        final List<ProductRow> list = new ArrayList<>();
-        for (Product product : elements) {
-            list.add(convertToProductRow(product));
-        }
-        return list;
     }
 
     private ProductRow convertToProductRow(final Product product) {

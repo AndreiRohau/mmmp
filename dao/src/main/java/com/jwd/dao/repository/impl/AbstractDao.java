@@ -1,7 +1,6 @@
 package com.jwd.dao.repository.impl;
 
 import com.jwd.dao.connection.ConnectionPool;
-import com.jwd.dao.connection.impl.ConnectionPoolImpl;
 import com.jwd.dao.exception.DaoException;
 
 import java.sql.Connection;
@@ -56,30 +55,30 @@ public abstract class AbstractDao {
     }
 
     protected void close(final ResultSet... resultSets) {
-        try {
-            if (nonNull(resultSets)) {
-                for (final ResultSet resultSet : resultSets) {
-                    if (nonNull(resultSet)) {
+        if (nonNull(resultSets)) {
+            for (final ResultSet resultSet : resultSets) {
+                if (nonNull(resultSet)) {
+                    try {
                         resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
     protected void close(final PreparedStatement... preparedStatements) {
-        try {
-            if (nonNull(preparedStatements)) {
-                for (final PreparedStatement preparedStatement : preparedStatements) {
-                    if (nonNull(preparedStatement)) {
+        if (nonNull(preparedStatements)) {
+            for (final PreparedStatement preparedStatement : preparedStatements) {
+                if (nonNull(preparedStatement)) {
+                    try {
                         preparedStatement.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
