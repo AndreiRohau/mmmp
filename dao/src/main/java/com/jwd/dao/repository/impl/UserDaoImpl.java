@@ -40,16 +40,11 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
                 convertNullToEmpty(userRow.getLastName()),
                 convertNullToEmpty(userRow.getPassword())
         );
-        Connection connection = null;
-        PreparedStatement preparedStatement1 = null;
-        PreparedStatement preparedStatement2 = null;
+        Connection connection = getConnection(false);
         ResultSet resultSet = null;
         int affectedRows = 0;
-        try {
-            connection = getConnection(false);
-            preparedStatement1 = getPreparedStatement(FIND_USER_BY_LOGIN_QUERY, connection, parameters1);
-            preparedStatement2 = getPreparedStatement(SAVE_USER_QUERY, connection, parameters2);
-
+        try (PreparedStatement preparedStatement1 = getPreparedStatement(FIND_USER_BY_LOGIN_QUERY, connection, parameters1);
+             PreparedStatement preparedStatement2 = getPreparedStatement(SAVE_USER_QUERY, connection, parameters2);) {
             // todo check isolation level
             resultSet = preparedStatement1.executeQuery();
             if (!resultSet.next()) {
@@ -63,7 +58,6 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
             throw new DaoException(e);
         } finally {
             close(resultSet);
-            close(preparedStatement1, preparedStatement2);
             retrieve(connection);
         }
     }

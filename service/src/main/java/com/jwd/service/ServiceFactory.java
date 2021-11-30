@@ -8,13 +8,15 @@ import com.jwd.service.serviceLogic.impl.UserServiceImpl;
 
 public class ServiceFactory {
 
-    private static final ServiceFactory INSTANCE = new ServiceFactory();
+    private static final ServiceFactory INSTANCE = new ServiceFactory(DaoFactory.getInstance());
 
-    private final DaoFactory daoFactory = DaoFactory.getInstance();
-    private final UserService userService = new UserServiceImpl();
-    private final ProductService productService = new ProductServiceImpl(daoFactory.getProductDao());
+    private final UserService userService;
+    private final ProductService productService;
 
-    private ServiceFactory() {}
+    private ServiceFactory(final DaoFactory daoFactory) {
+        userService = new UserServiceImpl();
+        productService = new ProductServiceImpl(daoFactory.getProductDao());
+    }
 
     public static ServiceFactory getInstance() {
         return INSTANCE;

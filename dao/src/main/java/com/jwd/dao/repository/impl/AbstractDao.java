@@ -18,10 +18,15 @@ public abstract class AbstractDao {
         this.connectionPool = connectionPool;
     }
 
-    protected Connection getConnection(final boolean hasAutocommit) throws DaoException, SQLException {
+    protected Connection getConnection(final boolean hasAutocommit) throws DaoException {
         final Connection connection = connectionPool.take();
-        connection.setAutoCommit(hasAutocommit);
-        return connection;
+        try {
+            connection.setAutoCommit(hasAutocommit);
+            return connection;
+        } catch (SQLException e) {
+            connectionPool.retrieve(connection);
+            throw new DaoException(e);
+        }
     }
 
     protected void retrieve(final Connection connection) {

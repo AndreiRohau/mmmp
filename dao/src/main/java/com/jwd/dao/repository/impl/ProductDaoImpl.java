@@ -31,46 +31,39 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
                 daoProductPageable.getLimit(),
                 offset
         );
-        Connection connection = null;
-        PreparedStatement preparedStatement1 = null;
-        PreparedStatement preparedStatement2 = null;
-        ResultSet resultSet1 = null;
-        ResultSet resultSet2 = null;
-        try {
-            connection = getConnection(false);
-            preparedStatement1 = getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
-            final String findPageOrderedQuery =
-                    String.format(FIND_PAGE_FILTERED_SORTED, daoProductPageable.getSortBy(), daoProductPageable.getDirection());
-            preparedStatement2 = getPreparedStatement(findPageOrderedQuery, connection, parameters2);
-            resultSet1 = preparedStatement1.executeQuery();
-            resultSet2 = preparedStatement2.executeQuery();
-            connection.commit();
+        Connection connection = getConnection(false);
 
-            return getProductRowPageable(daoProductPageable, resultSet1, resultSet2);
-        } catch (SQLException | DaoException e) {
-            e.printStackTrace();
+        try (PreparedStatement preparedStatementCountAllProducts = getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
+             PreparedStatement preparedStatementGetProductsPageList = getPreparedStatement(prepareFindPageOrderedQuery(daoProductPageable), connection, parameters2);
+             ResultSet totalProducts = preparedStatementCountAllProducts.executeQuery();
+             ResultSet productsPageList = preparedStatementGetProductsPageList.executeQuery();) {
+            connection.commit();
+            return getProductRowPageable(daoProductPageable, totalProducts, productsPageList);
+        } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            close(resultSet1, resultSet2);
-            close(preparedStatement1, preparedStatement2);
             retrieve(connection);
         }
     }
 
+    private String prepareFindPageOrderedQuery(Pageable<ProductRow> daoProductPageable) {
+        return String.format(FIND_PAGE_FILTERED_SORTED, daoProductPageable.getSortBy(), daoProductPageable.getDirection());
+    }
+
     private Pageable<ProductRow> getProductRowPageable(Pageable<ProductRow> daoProductPageable,
-                                                       ResultSet resultSet1,
-                                                       ResultSet resultSet2) throws SQLException {
+                                                       ResultSet totalProducts,
+                                                       ResultSet productsPageList) throws SQLException {
         final Pageable<ProductRow> pageable = new Pageable<>();
         long totalElements = 0L;
-        while (resultSet1.next()) {
-            totalElements = resultSet1.getLong(1);
+        while (totalProducts.next()) {
+            totalElements = totalProducts.getLong(1);
         }
         final List<ProductRow> rows = new ArrayList<>();
-        while (resultSet2.next()) {
-            long id = resultSet2.getLong(1);
-            String type = resultSet2.getString(2);
-            String company = resultSet2.getString(3);
-            String name = resultSet2.getString(4);
+        while (productsPageList.next()) {
+            long id = productsPageList.getLong(1);
+            String type = productsPageList.getString(2);
+            String company = productsPageList.getString(3);
+            String name = productsPageList.getString(4);
             rows.add(new ProductRow(id, type, company, name));
         }
         pageable.setPageNumber(daoProductPageable.getPageNumber());
