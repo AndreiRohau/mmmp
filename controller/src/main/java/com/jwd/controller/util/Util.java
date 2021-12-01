@@ -16,4 +16,11 @@ public class Util {
     public static String pathToJsp(final String jspName) {
         return JSP_FOLDER + jspName + JSP;
     }
+
+    public static String convertNullToEmpty(String s) {
+        if (isNull(s)) {
+            s = "";
+        }
+        return s;
+    }
 }

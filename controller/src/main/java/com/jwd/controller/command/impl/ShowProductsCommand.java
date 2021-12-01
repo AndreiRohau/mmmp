@@ -6,17 +6,16 @@ import com.jwd.service.ServiceFactory;
 import com.jwd.service.domain.Page;
 import com.jwd.service.domain.Product;
 import com.jwd.service.serviceLogic.ProductService;
-import com.jwd.service.serviceLogic.impl.ProductServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.logging.Logger;
 
 import static com.jwd.controller.util.Constant.*;
-import static com.jwd.controller.util.Util.isNullOrEmpty;
+import static com.jwd.controller.util.Util.convertNullToEmpty;
 import static com.jwd.controller.util.Util.pathToJsp;
 
-public class ShowProductsCommand implements Command {
+public class ShowProductsCommand extends AbstractPageProcessor implements Command {
     private static final Logger LOGGER = Logger.getLogger(ShowProductsCommand.class.getName());
 
     private final ProductService productService = ServiceFactory.getInstance().getProductService();
@@ -26,19 +25,10 @@ public class ShowProductsCommand implements Command {
         LOGGER.info("SHOW PRODUCTS STARTS.");
         try {
             // prepare data
-            String currentPageParam = request.getParameter(CURRENT_PAGE);
-            if (isNullOrEmpty(currentPageParam)) {
-                currentPageParam = "1";
-            }
-            String currentLimitParam = request.getParameter(PAGE_LIMIT);
-            if (isNullOrEmpty(currentLimitParam)) {
-                currentLimitParam = "5";
-            }
-            int currentPage = Integer.parseInt(currentPageParam);
-            int pageLimit = Integer.parseInt(currentLimitParam);
             final Page<Product> pageRequest = new Page<>();
-            pageRequest.setPageNumber(currentPage);
-            pageRequest.setLimit(pageLimit);
+            pageRequest.setFilter(prepareFilter(request));
+            pageRequest.setPageNumber(prepareCurrentPage(request));
+            pageRequest.setLimit(prepareCurrentLimit(request));
 
             // validation
             // ... pageRequest - validate before passing to next layer
@@ -52,5 +42,13 @@ public class ShowProductsCommand implements Command {
         } catch (Exception e) {
             throw new ControllerException(e);
         }
+    }
+
+    private Product prepareFilter(final HttpServletRequest request) {
+        Product filter = new Product();
+        filter.setType(convertNullToEmpty(request.getParameter(PRODUCT_TYPE)));
+        filter.setCompany(convertNullToEmpty(request.getParameter(PRODUCT_COMPANY)));
+        filter.setName(convertNullToEmpty(request.getParameter(PRODUCT_NAME)));
+        return filter;
     }
 }
