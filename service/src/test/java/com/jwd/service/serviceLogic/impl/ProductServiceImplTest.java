@@ -7,6 +7,7 @@ import com.jwd.dao.repository.ProductDao;
 import com.jwd.service.domain.Page;
 import com.jwd.service.domain.Product;
 import com.jwd.service.exception.ServiceException;
+import org.junit.Before;
 import org.junit.Test;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -24,21 +25,22 @@ public class ProductServiceImplTest {
     private ProductServiceImpl productService = new ProductServiceImpl(productDao);
 
     //region parameters
-    private int pageNumber = 1;
-    private long totalElements = 18;
-    private int limit = 3;
-    private List<Product> emptyElements = new ArrayList<>();
-    private List<Product> elements = Arrays.asList(
-            new Product(17L, "PC", "hp", "elite-book"),
-            new Product(18L, "PC", "hp", "free"),
-            new Product(4L, "PC", "DELL", "future-inspiron")
-    );
-    private List<ProductRow> emptyElementRows = new ArrayList<>();
-    private Product filter = new Product();
-    private ProductRow filterRow = new ProductRow();
-    private String sortBy = "name";
-    private String direction = "ASC";
+    private int pageNumber;
+    private long totalElements;
+    private int limit;
+    private List<Product> emptyElements;
+    private List<Product> elements;
+    private List<ProductRow> emptyElementRows;
+    private Product filter;
+    private ProductRow filterRow;
+    private String sortBy;
+    private String direction;
     //endregion
+
+    @Before
+    public void init() {
+        initFields();
+    }
 
     @Test(expected = ServiceException.class)
     public void testShowProducts_validationExceptionNullParameter() throws ServiceException {
@@ -55,6 +57,8 @@ public class ProductServiceImplTest {
      */
     @Test
     public void testShowProducts_positive() throws ServiceException {
+//        filter.setName("oO");
+//        pageNumber = 3;
         final Page<Product> productPageRequest = new Page<>(pageNumber, totalElements, limit, emptyElements, filter, sortBy, direction);
         final Page<Product> expectedProductPageRequest = new Page<>(pageNumber, totalElements, limit, elements, filter, sortBy, direction);
 
@@ -63,6 +67,7 @@ public class ProductServiceImplTest {
         // 2. showProducts() -> actualSecondResult
         // 3. assert THAT actualSecondResult-elements minus actualProductPage-elements ARE new_products that you have saved before
 
+        List<Product> elements = actualProductPage.getElements();
         assertEquals(expectedProductPageRequest, actualProductPage);
     }
 
@@ -80,5 +85,22 @@ public class ProductServiceImplTest {
 
         // assert
         assertEquals((new ServiceException(new DaoException(psqlException))).getMessage(), actual.getMessage());
+    }
+
+    private void initFields() {
+        pageNumber = 1;
+        totalElements = 18;
+        limit = 3;
+        emptyElements = new ArrayList<>();
+        elements = Arrays.asList(
+                new Product(17L, "PC", "hp", "elite-book"),
+                new Product(18L, "PC", "hp", "free"),
+                new Product(4L, "PC", "DELL", "future-inspiron")
+        );
+        emptyElementRows = new ArrayList<>();
+        filter = new Product();
+        filterRow = new ProductRow();
+        sortBy = "name";
+        direction = "ASC";
     }
 }

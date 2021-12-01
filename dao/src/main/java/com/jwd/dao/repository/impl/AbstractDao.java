@@ -52,9 +52,9 @@ public abstract class AbstractDao {
                                                  final int queryParameterIndex, final Object parameter) throws SQLException {
         if (Long.class == parameter.getClass()) {
             preparedStatement.setLong(queryParameterIndex, (Long) parameter);
-        } else if (Integer.class == parameter.getClass()){
+        } else if (Integer.class == parameter.getClass()) {
             preparedStatement.setInt(queryParameterIndex, (Integer) parameter);
-        } else if (String.class == parameter.getClass()){
+        } else if (String.class == parameter.getClass()) {
             preparedStatement.setString(queryParameterIndex, (String) parameter);
         }
     }
@@ -85,6 +85,14 @@ public abstract class AbstractDao {
                 }
             }
         }
+    }
+
+    protected int prepareOffset(final int pageNumber, final int limit) {
+        return (pageNumber - 1) * limit;
+    }
+
+    protected String setSortAndDirection(final String getPageQuery, final String sortBy, final String direction) {
+        return String.format(getPageQuery, sortBy, direction);
     }
 
     protected void processAbnormalCase(boolean isTrue, String message) throws DaoException {

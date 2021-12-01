@@ -12,33 +12,52 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import static com.jwd.dao.util.Util.convertNullToEmpty;
+
 public class ProductDaoImpl extends AbstractDao implements ProductDao {
-    private static final String COUNT_ALL_FILTERED_SORTED = "SELECT count(p.id) FROM products p;";
-    // SELECT * FROM products p ORDER BY p.name ASC LIMIT 5 OFFSET 0;
-    private static final String FIND_PAGE_FILTERED_SORTED = "SELECT * FROM products p ORDER BY p.%s %s LIMIT ? OFFSET ?;";
+    private static final String COUNT_ALL_FILTERED_SORTED =
+            "SELECT count(p.id) FROM products p " +
+                    "WHERE UPPER(p.type) LIKE CONCAT('%', UPPER(?), '%') " +
+                    "AND UPPER(p.company) LIKE CONCAT('%', UPPER(?), '%') " +
+                    "AND UPPER(p.name) LIKE CONCAT('%', UPPER(?), '%');";
+    //    private static final String COUNT_ALL_FILTERED_SORTED = "SELECT count(p.id) FROM products p WHERE p.colm LIKE CONCAT('%', ?, '%')";";
+    //private static final String FIND_PAGE_FILTERED_SORTED = "SELECT * FROM products p ORDER BY p.name ASC LIMIT 5 OFFSET 0";
+    private static final String FIND_PAGE_FILTERED_SORTED =
+            "SELECT * FROM products p " +
+                    "WHERE UPPER(p.type) LIKE CONCAT('%%', UPPER(?), '%%') " +
+                    "AND UPPER(p.company) LIKE CONCAT('%%', UPPER(?), '%%') " +
+                    "AND UPPER(p.name) LIKE CONCAT('%%', UPPER(?), '%%')" +
+                    "ORDER BY p.%s %s LIMIT ? OFFSET ?;";
+
+    //private static final String FIND_PAGE_FILTERED_SORTED = "SELECT * FROM products p WHERE p.colm LIKE CONCAT('%', ?, '%')" ORDER BY p.name ASC LIMIT 5 OFFSET 0";
     public ProductDaoImpl(final ConnectionPool connectionPool) {
         super(connectionPool);
     }
 
     @Override
     public Pageable<ProductRow> findPageByFilter(Pageable<ProductRow> daoProductPageable) throws DaoException {
-        final int offset = (daoProductPageable.getPageNumber() - 1) * daoProductPageable.getLimit();
-        List<Object> parameters1 = Collections.emptyList(); // todo implement filtering
-        List<Object> parameters2 = Arrays.asList( // todo implement filtering
-                daoProductPageable.getLimit(),
-                offset
+        final List<Object> parameters1 = Arrays.asList(
+                convertNullToEmpty(daoProductPageable.getFilter().getType()).toUpperCase(),
+                convertNullToEmpty(daoProductPageable.getFilter().getCompany()).toUpperCase(),
+                convertNullToEmpty(daoProductPageable.getFilter().getName()).toUpperCase()
         );
-        Connection connection = getConnection(false);
-
-        try (PreparedStatement preparedStatementCountAllProducts =
+        final List<Object> parameters2 = Arrays.asList(
+                convertNullToEmpty(daoProductPageable.getFilter().getType()).toUpperCase(),
+                convertNullToEmpty(daoProductPageable.getFilter().getCompany()).toUpperCase(),
+                convertNullToEmpty(daoProductPageable.getFilter().getName()).toUpperCase(),
+                daoProductPageable.getLimit(),
+                prepareOffset(daoProductPageable.getPageNumber(), daoProductPageable.getLimit())
+        );
+        final String getPageQuery = setSortAndDirection(FIND_PAGE_FILTERED_SORTED, daoProductPageable.getSortBy(), daoProductPageable.getDirection());
+        final Connection connection = getConnection(false);
+        try (final PreparedStatement preparedStatementCountAllProducts =
                      getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
-             PreparedStatement preparedStatementGetProductsPageList =
-                     getPreparedStatement(prepareFindPageOrderedQuery(daoProductPageable), connection, parameters2);
-             ResultSet totalProducts = preparedStatementCountAllProducts.executeQuery();
-             ResultSet productsPageList = preparedStatementGetProductsPageList.executeQuery();) {
+             final PreparedStatement preparedStatementGetProductsPageList =
+                     getPreparedStatement(getPageQuery, connection, parameters2);
+             final ResultSet totalProducts = preparedStatementCountAllProducts.executeQuery();
+             final ResultSet productsPageList = preparedStatementGetProductsPageList.executeQuery();) {
             connection.commit();
             return getProductRowPageable(daoProductPageable, totalProducts, productsPageList);
         } catch (SQLException e) {
@@ -46,10 +65,6 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
         } finally {
             retrieve(connection);
         }
-    }
-
-    private String prepareFindPageOrderedQuery(Pageable<ProductRow> daoProductPageable) {
-        return String.format(FIND_PAGE_FILTERED_SORTED, daoProductPageable.getSortBy(), daoProductPageable.getDirection());
     }
 
     private Pageable<ProductRow> getProductRowPageable(Pageable<ProductRow> daoProductPageable,
