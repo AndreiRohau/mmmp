@@ -1,5 +1,7 @@
 package com.jwd.service.domain;
 
+import com.jwd.dao.domain.UserRowDto;
+
 public class UserDto {
     private Long id;
     private String login;
@@ -16,7 +18,7 @@ public class UserDto {
         this.lastName = lastName;
     }
 
-    public UserDto(com.jwd.dao.domain.UserDto user) {
+    public UserDto(UserRowDto user) {
         id = user.getId();
         login = user.getLogin();
         firstName = user.getFirstName();

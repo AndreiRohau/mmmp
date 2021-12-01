@@ -1,48 +1,93 @@
 package com.jwd.dao.repository.impl;
 
-import com.jwd.dao.domain.User;
-import com.jwd.dao.domain.UserDto;
+import com.jwd.dao.connection.ConnectionPool;
+import com.jwd.dao.domain.UserRow;
+import com.jwd.dao.domain.UserRowDto;
 import com.jwd.dao.exception.DaoException;
 import com.jwd.dao.repository.UserDao;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static com.jwd.dao.util.Util.convertNullToEmpty;
 import static java.util.Objects.isNull;
 
-public class UserDaoImpl implements UserDao {
-    // stubbed database
-    private List<User> stubbedUsers = new ArrayList<>();
+public class UserDaoImpl extends AbstractDao implements UserDao {
 
-    public UserDaoImpl() {
-        initStubbedUsers();
-    }
+    private static final String FIND_USER_BY_LOGIN_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE u.login = ?;";
+    private static final String SAVE_USER_QUERY = "INSERT INTO users (login, firstname, lastname, password) VALUES (?, ?, ?, ?)";
+    private static final String FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE u.login = ? AND u.password = ?;";
+    private static final String FIND_ALL_USERS_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u;";
+    private static final String FIND_USER_BY_ID_QUERY = "SELECT u.id, u.login, u.firstname, u.lastname FROM users u WHERE id = ?;";
 
-    private void initStubbedUsers() {
-        stubbedUsers.add(new User(1L, "abra", "Andrei", "Rohau", "111"));
-        stubbedUsers.add(new User(2L, "bara", "Valera", "Petrov", "222"));
-        stubbedUsers.add(new User(3L, "cobra", "Serhei", "Skaryna", "333"));
-    }
-
-    @Override
-    public List<UserDto> getUsers() {
-        // validate parameters from higher layer
-        final List<User> users = stubbedUsers; // execute query getting users from database
-        final List<UserDto> userDtos = new ArrayList<>();
-        for (final User daoUserDto : users) {
-            userDtos.add(new UserDto(daoUserDto));
-        }
-        return userDtos;
+    public UserDaoImpl(final ConnectionPool connectionPool) {
+        super(connectionPool);
     }
 
     @Override
-    public UserDto saveUser(User user) throws DaoException {
-        if (isNull(user)) {
-            throw new DaoException();
+    public UserRowDto saveUser(UserRow userRow) throws DaoException {
+        final List<Object> parameters1 = Collections.singletonList(
+                convertNullToEmpty(userRow.getLogin())
+        );
+        final List<Object> parameters2 = Arrays.asList(
+                convertNullToEmpty(userRow.getLogin()),
+                convertNullToEmpty(userRow.getFirstName()),
+                convertNullToEmpty(userRow.getLastName()),
+                convertNullToEmpty(userRow.getPassword())
+        );
+        Connection connection = getConnection(false);
+        ResultSet resultSet = null;
+        int affectedRows = 0;
+        try (PreparedStatement preparedStatement1 = getPreparedStatement(FIND_USER_BY_LOGIN_QUERY, connection, parameters1);
+             PreparedStatement preparedStatement2 = getPreparedStatement(SAVE_USER_QUERY, connection, parameters2);) {
+            // todo check isolation level
+            resultSet = preparedStatement1.executeQuery();
+            if (!resultSet.next()) {
+                affectedRows = preparedStatement2.executeUpdate();
+            }
+            connection.commit();
+
+            processAbnormalCase(affectedRows < 1, "User HAS NOT BEEN registered. Such login exists.");
+            return new UserRowDto(userRow);
+        } catch (SQLException | DaoException e) {
+            throw new DaoException(e);
+        } finally {
+            close(resultSet);
+            retrieve(connection);
         }
-        // validate parameters from higher layer
-        // do not forget to generate user id if needed
-        stubbedUsers.add(user); // execute query saving user to database
-        return new UserDto(user);
+    }
+
+    @Override
+    public UserRowDto findUserByLoginAndPassword(UserRow userRow) throws DaoException {
+        List<Object> parameters = Arrays.asList(
+                userRow.getLogin(),
+                userRow.getPassword()
+        );
+        Connection connection = getConnection(true);
+        try (PreparedStatement preparedStatement =
+                     getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
+             ResultSet resultSet = preparedStatement.executeQuery();) {
+
+            UserRowDto userRowDto = null;
+            while (resultSet.next()) {
+                final long id = resultSet.getLong(1);
+                final String login = resultSet.getString(2);
+                final String firstName = resultSet.getString(3);
+                final String lastName = resultSet.getString(4);
+                userRowDto = new UserRowDto(id, login, firstName, lastName);
+            }
+            processAbnormalCase(isNull(userRowDto), "No such User.");
+            return userRowDto;
+        } catch (SQLException | DaoException e) {
+            e.printStackTrace();
+            throw new DaoException(e);
+        } finally {
+            retrieve(connection);
+        }
     }
 }
