@@ -33,8 +33,10 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
         );
         Connection connection = getConnection(false);
 
-        try (PreparedStatement preparedStatementCountAllProducts = getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
-             PreparedStatement preparedStatementGetProductsPageList = getPreparedStatement(prepareFindPageOrderedQuery(daoProductPageable), connection, parameters2);
+        try (PreparedStatement preparedStatementCountAllProducts =
+                     getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
+             PreparedStatement preparedStatementGetProductsPageList =
+                     getPreparedStatement(prepareFindPageOrderedQuery(daoProductPageable), connection, parameters2);
              ResultSet totalProducts = preparedStatementCountAllProducts.executeQuery();
              ResultSet productsPageList = preparedStatementGetProductsPageList.executeQuery();) {
             connection.commit();

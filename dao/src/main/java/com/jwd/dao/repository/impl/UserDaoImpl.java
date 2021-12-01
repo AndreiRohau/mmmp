@@ -68,20 +68,17 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
                 userRow.getLogin(),
                 userRow.getPassword()
         );
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = getConnection(true);
-            preparedStatement = getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
-            resultSet = preparedStatement.executeQuery();
+        Connection connection = getConnection(true);
+        try (PreparedStatement preparedStatement =
+                     getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters);
+             ResultSet resultSet = preparedStatement.executeQuery();) {
 
             UserRowDto userRowDto = null;
             while (resultSet.next()) {
-                long id = resultSet.getLong(1);
-                String login = resultSet.getString(2);
-                String firstName = resultSet.getString(3);
-                String lastName = resultSet.getString(4);
+                final long id = resultSet.getLong(1);
+                final String login = resultSet.getString(2);
+                final String firstName = resultSet.getString(3);
+                final String lastName = resultSet.getString(4);
                 userRowDto = new UserRowDto(id, login, firstName, lastName);
             }
             processAbnormalCase(isNull(userRowDto), "No such User.");
@@ -90,8 +87,6 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
             e.printStackTrace();
             throw new DaoException(e);
         } finally {
-            close(resultSet);
-            close(preparedStatement);
             retrieve(connection);
         }
     }
