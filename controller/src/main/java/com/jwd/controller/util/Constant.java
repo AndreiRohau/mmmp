@@ -5,6 +5,7 @@ public class Constant {
             ELEMENTS_AT_PAGE = "5",
             PAGE_1 = "1",
             JSP_FOLDER = "WEB-INF/jsp/",
+            LOCALE = "locale",
             HOME = "home",
             MAIN = "main",
             JSP = ".jsp",

@@ -5,6 +5,7 @@ public enum CommandEnum {
     LOGOUT("logout"),
     LOGIN("login"),
     REGISTRATION("registration"),
+    CHANGE_LANGUAGE("change_language"),
     SHOW_PRODUCTS("show_products");
 
     private final String frontEndName;

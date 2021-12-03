@@ -30,7 +30,8 @@ public class AuthFilter implements Filter {
                 DEFAULT.getFrontEndName(),
                 REGISTRATION.getFrontEndName(),
                 LOGIN.getFrontEndName(),
-                LOGOUT.getFrontEndName()
+                LOGOUT.getFrontEndName(),
+                CHANGE_LANGUAGE.getFrontEndName()
         );
         if (alwaysAvailableCommands.contains(req.getParameter(COMMAND)) ||
                 req.getSession().getAttribute(ROLE) != null) {
