@@ -18,7 +18,6 @@ import static com.jwd.controller.util.Constant.*;
 import static java.util.Objects.nonNull;
 
 public class LogInCommand implements Command {
-
     private static final Logger LOGGER = Logger.getLogger(LogInCommand.class.getName());
 
     private final UserService userService = ServiceFactory.getInstance().getUserService();

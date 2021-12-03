@@ -40,6 +40,7 @@ public class FrontController extends HttpServlet {
         commandMap.put(LOGIN, new LogInCommand());
         commandMap.put(LOGOUT, new LogOutCommand());
         commandMap.put(SHOW_PRODUCTS, new ShowProductsCommand());
+        commandMap.put(CHANGE_LANGUAGE, new ChangeLanguageCommand());
     }
 
     @Override
