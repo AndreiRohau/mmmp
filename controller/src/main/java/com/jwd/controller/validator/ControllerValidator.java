@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import static com.jwd.controller.util.Util.isNullOrEmpty;
 
-public class ControllerValidator  {
+public class ControllerValidator {
 
     public void isValidLogin(final String login) throws ControllerException {
         if (isNullOrEmpty(login)) {
