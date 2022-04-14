@@ -18,6 +18,14 @@ public class AuthFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(AuthFilter.class.getName());
 
+    private static final List<String> alwaysAvailableCommands = Arrays.asList(
+            DEFAULT.getFrontEndName(),
+            REGISTRATION.getFrontEndName(),
+            LOGIN.getFrontEndName(),
+            LOGOUT.getFrontEndName(),
+            CHANGE_LANGUAGE.getFrontEndName()
+    );
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -26,13 +34,6 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        final List<String> alwaysAvailableCommands = Arrays.asList(
-                DEFAULT.getFrontEndName(),
-                REGISTRATION.getFrontEndName(),
-                LOGIN.getFrontEndName(),
-                LOGOUT.getFrontEndName(),
-                CHANGE_LANGUAGE.getFrontEndName()
-        );
         if (alwaysAvailableCommands.contains(req.getParameter(COMMAND)) ||
                 req.getSession().getAttribute(ROLE) != null) {
             LOGGER.info("================PROCESSED");

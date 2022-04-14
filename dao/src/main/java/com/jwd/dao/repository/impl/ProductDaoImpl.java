@@ -50,15 +50,17 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
                 daoProductPageable.getLimit(),
                 prepareOffset(daoProductPageable.getPageNumber(), daoProductPageable.getLimit())
         );
+
         final String getPageQuery = setSortAndDirection(FIND_PAGE_FILTERED_SORTED, daoProductPageable.getSortBy(), daoProductPageable.getDirection());
         final Connection connection = getConnection(false);
-        try (final PreparedStatement preparedStatementCountAllProducts =
-                     getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
-             final PreparedStatement preparedStatementGetProductsPageList =
-                     getPreparedStatement(getPageQuery, connection, parameters2);
+
+        try (final PreparedStatement preparedStatementCountAllProducts = getPreparedStatement(COUNT_ALL_FILTERED_SORTED, connection, parameters1);
+             final PreparedStatement preparedStatementGetProductsPageList = getPreparedStatement(getPageQuery, connection, parameters2);
              final ResultSet totalProducts = preparedStatementCountAllProducts.executeQuery();
              final ResultSet productsPageList = preparedStatementGetProductsPageList.executeQuery();) {
+
             connection.commit();
+
             return getProductRowPageable(daoProductPageable, totalProducts, productsPageList);
         } catch (SQLException e) {
             throw new DaoException(e);
