@@ -36,6 +36,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Long login(User user) throws ServiceException {
+        try {
+            final UserRow userRow = convertServiceUserToDaoUser(user);
+            return userDao.loginUser(userRow);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
     private UserRow convertServiceUserToDaoUser(User user) {
         final UserRow userRow = new UserRow();
         userRow.setId(user.getId());

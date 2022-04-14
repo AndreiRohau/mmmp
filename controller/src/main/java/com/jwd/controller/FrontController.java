@@ -2,6 +2,7 @@ package com.jwd.controller;
 
 import com.jwd.controller.command.Command;
 import com.jwd.controller.command.impl.DefaultCommand;
+import com.jwd.controller.command.impl.LoginationCommand;
 import com.jwd.controller.command.impl.RegistrationCommand;
 import com.jwd.controller.exception.ControllerException;
 import com.jwd.controller.util.CommandEnum;
@@ -16,6 +17,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.jwd.controller.util.CommandEnum.LOGIN;
 import static com.jwd.controller.util.CommandEnum.*;
 import static com.jwd.controller.util.Constant.*;
 import static java.util.Objects.isNull;
@@ -36,6 +38,7 @@ public class FrontController extends HttpServlet {
         }
         commandMap.put(DEFAULT, new DefaultCommand());
         commandMap.put(REGISTRATION, new RegistrationCommand());
+        commandMap.put(LOGIN, new LoginationCommand());
     }
 
     @Override

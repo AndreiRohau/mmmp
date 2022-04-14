@@ -6,4 +6,6 @@ import com.jwd.service.exception.ServiceException;
 
 public interface UserService {
     UserDto registerUser(User user) throws ServiceException;
+
+    Long login(User user) throws ServiceException;
 }

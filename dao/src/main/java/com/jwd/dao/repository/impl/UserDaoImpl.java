@@ -29,6 +29,41 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
     }
 
     @Override
+    public Long loginUser(UserRow userRow) throws DaoException {
+        final List<Object> parameters1 = Arrays.asList(
+                convertNullToEmpty(userRow.getLogin()),
+                convertNullToEmpty(userRow.getPassword())
+        );
+        Connection connection = null;
+        PreparedStatement preparedStatement1 = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getConnection(false);
+            preparedStatement1 = getPreparedStatement(FIND_USER_BY_LOGIN_AND_PASSWORD_QUERY, connection, parameters1);
+
+            // todo check isolation level
+            resultSet = preparedStatement1.executeQuery();
+            UserRowDto userRowDto = new UserRowDto();
+            while (resultSet.next()) {
+                final Long id = resultSet.getLong(1);
+                final String login = resultSet.getString(2);
+                final String firstName = resultSet.getString(3);
+                final String lastName = resultSet.getString(4);
+                userRowDto = new UserRowDto(id, login, firstName, lastName);
+            }
+            connection.commit();
+
+            return userRowDto.getId();
+        } catch (SQLException | DaoException e) {
+            throw new DaoException(e);
+        } finally {
+            close(resultSet);
+            close(preparedStatement1);
+            retrieve(connection);
+        }
+    }
+
+    @Override
     public UserRowDto saveUser(UserRow userRow) throws DaoException {
         final List<Object> parameters1 = Collections.singletonList(
                 convertNullToEmpty(userRow.getLogin())
@@ -53,11 +88,20 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
             resultSet = preparedStatement1.executeQuery();
             if (!resultSet.next()) {
                 affectedRows = preparedStatement2.executeUpdate();
+                resultSet = preparedStatement1.executeQuery();
+            }
+            UserRowDto userRowDto = null;
+            while (resultSet.next()) {
+                final long id = resultSet.getLong(1);
+                final String login = resultSet.getString(2);
+                final String firstName = resultSet.getString(3);
+                final String lastName = resultSet.getString(4);
+                userRowDto = new UserRowDto(id, login, firstName, lastName);
             }
             connection.commit();
 
             processAbnormalCase(affectedRows < 1, "User HAS NOT BEEN registered. Such login exists.");
-            return new UserRowDto(userRow);
+            return userRowDto;
         } catch (SQLException | DaoException e) {
             throw new DaoException(e);
         } finally {

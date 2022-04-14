@@ -2,7 +2,8 @@ package com.jwd.controller.util;
 
 public enum CommandEnum {
     DEFAULT("default"),
-    REGISTRATION("registration");
+    REGISTRATION("registration"),
+    LOGIN("login");
 
     private final String frontEndName;
 

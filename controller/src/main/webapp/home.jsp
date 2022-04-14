@@ -9,6 +9,9 @@
     </head>
     <body>
     <div class="header">
+        <c:if test="${userId != null}">
+            <p>User_id=<c:out value="${userId}" /></p>
+        </c:if>
         <h2>Home!</h2>
         <p><c:out value="${message}" /></p>
         <p><c:out value="${error_message}" /></p>
